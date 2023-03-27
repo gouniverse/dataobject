@@ -1,13 +1,13 @@
 package dataobject
 
-// DataObjectInterface is an interface for a data object
-type DataObjectInterface interface {
+// DataObjectFluentInterface is an interface for a fluent data object
+type DataObjectFluentInterface interface {
 
 	// ID returns the ID of the object
 	ID() string
 
 	// SetID sets the ID of the object
-	SetID(id string)
+	SetID(id string) DataObjectFluentInterface
 
 	// GetData returns the data for the object
 	Data() map[string]string

@@ -1,6 +1,6 @@
 package dataobject
 
-var _ DataObjectInterface = (*DataObject)(nil) // verify it extends the task interface
+var _ DataObjectFluentInterface = (*DataObject)(nil) // verify it extends the task interface
 
 type DataObject struct {
 	data        map[string]string
@@ -11,7 +11,7 @@ func (do *DataObject) ID() string {
 	return do.Get("id")
 }
 
-func (do *DataObject) SetID(id string) DataObjectInterface {
+func (do *DataObject) SetID(id string) DataObjectFluentInterface {
 	do.Set("id", id)
 	return do
 }
@@ -33,7 +33,7 @@ func (do *DataObject) IsDirty() bool {
 
 // SetData sets the data for the object and marks it as dirty
 // see Hydrate for dirtyless assignment
-func (do *DataObject) SetData(data map[string]string) DataObjectInterface {
+func (do *DataObject) SetData(data map[string]string) DataObjectFluentInterface {
 	for k, v := range data {
 		do.Set(k, v)
 	}
