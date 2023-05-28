@@ -84,3 +84,30 @@ func SaveFullUser(user User) bool {
     return save(allData)
 }
 ```
+
+## Serialize to JSON
+
+```golang
+jsonString, err := user.ToJSON()
+
+
+if err != nil {
+    log.Fatal("Error serializing")
+}
+
+log.Println(jsonString)
+
+```
+
+
+## Unserialize from JSON
+
+```golang
+user, err := NewDataObjectFromJSON(jsonString)
+
+if err != nil {
+    log.Fatal("Error unserializing")
+}
+
+user.Get("first_name")
+```

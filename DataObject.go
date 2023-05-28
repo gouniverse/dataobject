@@ -1,5 +1,7 @@
 package dataobject
 
+import "encoding/json"
+
 var _ DataObjectFluentInterface = (*DataObject)(nil) // verify it extends the data object interface
 
 type DataObject struct {
@@ -69,4 +71,13 @@ func (do *DataObject) Get(key string) string {
 func (do *DataObject) Hydrate(data map[string]string) {
 	do.Init()
 	do.data = data
+}
+
+func (do *DataObject) ToJSON() (string, error) {
+	jsonValue, jsonError := json.Marshal(do.data)
+	if jsonError != nil {
+		return "", jsonError
+	}
+
+	return string(jsonValue), nil
 }
