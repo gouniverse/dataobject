@@ -9,10 +9,12 @@ type DataObject struct {
 	dataChanged map[string]string
 }
 
+// ID returns the ID of the object
 func (do *DataObject) ID() string {
 	return do.Get("id")
 }
 
+// SetID sets the ID of the object
 func (do *DataObject) SetID(id string) DataObjectFluentInterface {
 	do.Set("id", id)
 	return do
@@ -30,6 +32,11 @@ func (do *DataObject) DataChanged() map[string]string {
 	return do.dataChanged
 }
 
+// MarkAsNotDirty marks the object as not dirty
+func (do *DataObject) MarkAsNotDirty() {
+	do.dataChanged = map[string]string{}
+}
+
 // IsDirty returns if data has been modified
 func (do *DataObject) IsDirty() bool {
 	do.Init()
@@ -37,7 +44,7 @@ func (do *DataObject) IsDirty() bool {
 }
 
 // SetData sets the data for the object and marks it as dirty
-// see Hydrate for dirtyless assignment
+// see Hydrate for assignment without marking as dirty
 func (do *DataObject) SetData(data map[string]string) DataObjectFluentInterface {
 	for k, v := range data {
 		do.Set(k, v)
@@ -45,6 +52,7 @@ func (do *DataObject) SetData(data map[string]string) DataObjectFluentInterface 
 	return do
 }
 
+// Init initializes the data object if it is not already initialized
 func (do *DataObject) Init() {
 	if len(do.data) < 1 {
 		do.data = map[string]string{}
@@ -67,12 +75,17 @@ func (do *DataObject) Get(key string) string {
 	return do.data[key]
 }
 
-// Hybernate sets the data for the object without marking as dirty
+// Hydrate sets the data for the object without marking it as dirty
 func (do *DataObject) Hydrate(data map[string]string) {
 	do.Init()
 	do.data = data
 }
 
+// ToJSON converts the DataObject to a JSON string
+//
+// Returns:
+// - the JSON string representation of the DataObject
+// - an error if any
 func (do *DataObject) ToJSON() (string, error) {
 	jsonValue, jsonError := json.Marshal(do.data)
 	if jsonError != nil {
