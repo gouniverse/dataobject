@@ -22,6 +22,131 @@ The concept is a bit similar to a POJO and a Java Bean.
 
 ## Usage
 
+```golang
+package models
+
+import (
+	"github.com/gouniverse/dataobject"
+	"github.com/gouniverse/uid"
+)
+
+// User is a data object
+type User struct {
+	dataobject.DataObject
+}
+
+// =============================  CONSTRUCTORS =============================
+
+// NewUser instantiates a new user
+func NewUser() *User {
+	o := &User{}
+	o.SetID(uid.HumanUid())
+    o.SetStatus("active")
+    o.SetCreatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
+    o.SetUpdatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
+	return o
+}
+
+// NewUserFromExistingData helper method to hydrate an existing user data object
+func NewUserFromExistingData(data map[string]string) *User {
+	o := &User{}
+	o.Hydrate(data)
+	return o
+}
+
+// ======================== RELATIONS/ORM (OPTIONAL) ===========================
+
+// Optional. All your relations with other objects
+
+func (o *User) Messages() []Messages {
+	return NewMessageService.GetUserMessages(o.GetID())
+}
+
+
+func (o *User) Create() error {
+	return NewUserService.Create(o)
+}
+
+func (o *User) Update() error {
+    if !o.IsDirty() {
+        return nil // object has not been changed
+    }
+
+	return NewUserService.Update(o)
+}
+
+// ================================ METHODS ====================================
+
+func (o *User) IsActive() bool {
+	return o.GetStatus() == "active"
+}
+
+// ============================ GETTERS AND SETTERS ============================
+
+func (o *User) CreatedAt() string {
+	return o.Get("created_at")
+}
+
+func (o *User) CreatedAtCarbon() carbon.Carbon {
+	return carbon.Parse(o.CreatedAt(), carbon.UTC)
+}
+
+func (o *User) SetCreatedAt(createdAt string) *User {
+	o.Set("created_at", createdAt)
+	return o
+}
+
+func (o *User) FirstName() string {
+	return o.Get("first_name")
+}
+
+func (o *User) SetFirstName(firstName string) *User {
+	o.Set("first_name", firstName)
+	return o
+}
+
+func (o *User) LastName() string {
+	return o.Get("last_name")
+}
+
+func (o *User) SetLastName(lastName string) *User {
+	o.Set("last_name", lastName)
+	return o
+}
+
+func (o *User) MiddleNames() string {
+	return o.Get("middle_names")
+}
+
+func (o *User) SetMiddleNames(middleNames string) *User {
+	o.Set("middle_names", middleNames)
+	return o
+}
+
+func (o *User) Status() string {
+	return o.Get("status")
+}
+
+func (o *User) SetStatus(status string) *User {
+	o.Set("status", status)
+	return o
+}
+
+func (o *User) UpdatedAt() string {
+	return o.Get("updated_at")
+}
+
+func (o *User) UpdatedAtCarbon() carbon.Carbon {
+	return carbon.Parse(o.UpdatedAt(), carbon.UTC)
+}
+
+func (o *User) SetUpdatedAt(updatedAt string) *User {
+	o.Set("updated_at", updatedAt)
+	return o
+}
+
+```
+
 For an object using the above specifications
 
 ```
