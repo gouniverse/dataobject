@@ -22,12 +22,19 @@ The concept is a bit similar to a POJO and a Java Bean.
 
 ## Usage
 
+This is a full fledged example of a User data object taken from real life. 
+
+The example shows how to create new data object, set and get fields. Add helper methods to work with the fields.
+
+Optional ORM-like relationship methods are also included. Use these with caution as these may create dependencies (i.e. with your services, repos, etc) that you may not want and need.
+
 ```golang
 package models
 
 import (
 	"github.com/gouniverse/dataobject"
 	"github.com/gouniverse/uid"
+	"github.com/golang-module/carbon/v2"
 )
 
 // User is a data object
@@ -41,9 +48,9 @@ type User struct {
 func NewUser() *User {
 	o := &User{}
 	o.SetID(uid.HumanUid())
-    o.SetStatus("active")
-    o.SetCreatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
-    o.SetUpdatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
+	o.SetStatus("active")
+	o.SetCreatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
+	o.SetUpdatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
 	return o
 }
 
@@ -56,8 +63,6 @@ func NewUserFromExistingData(data map[string]string) *User {
 
 // ======================== RELATIONS/ORM (OPTIONAL) ===========================
 
-// Optional. All your relations with other objects
-
 func (o *User) Messages() []Messages {
 	return NewMessageService.GetUserMessages(o.GetID())
 }
@@ -68,9 +73,9 @@ func (o *User) Create() error {
 }
 
 func (o *User) Update() error {
-    if !o.IsDirty() {
-        return nil // object has not been changed
-    }
+	if !o.IsDirty() {
+		return nil // object has not been changed
+	}
 
 	return NewUserService.Update(o)
 }
