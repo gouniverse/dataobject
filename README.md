@@ -1,3 +1,5 @@
+<img src="image.jpg" width="100%" />
+
 # Data Object <a href="https://gitpod.io/#https://github.com/gouniverse/dataobject" style="float:right:"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" loading="lazy"></a>
 
 A data object is a special purpose structure that is designed
