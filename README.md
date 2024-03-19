@@ -85,7 +85,7 @@ func (o *User) Update() error {
 // ================================ METHODS ====================================
 
 func (o *User) IsActive() bool {
-	return o.GetStatus() == "active"
+	return o.Status() == "active"
 }
 
 // ============================ GETTERS AND SETTERS ============================
