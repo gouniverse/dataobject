@@ -2,7 +2,7 @@ package dataobject
 
 import "encoding/json"
 
-var _ DataObjectFluentInterface = (*DataObject)(nil) // verify it extends the data object interface
+var _ DataObjectInterface = (*DataObject)(nil) // verify it extends the data object interface
 
 type DataObject struct {
 	data        map[string]string
@@ -15,9 +15,8 @@ func (do *DataObject) ID() string {
 }
 
 // SetID sets the ID of the object
-func (do *DataObject) SetID(id string) DataObjectFluentInterface {
+func (do *DataObject) SetID(id string) {
 	do.Set("id", id)
-	return do
 }
 
 // Data returns all the data of the object
@@ -45,11 +44,10 @@ func (do *DataObject) IsDirty() bool {
 
 // SetData sets the data for the object and marks it as dirty
 // see Hydrate for assignment without marking as dirty
-func (do *DataObject) SetData(data map[string]string) DataObjectFluentInterface {
+func (do *DataObject) SetData(data map[string]string) {
 	for k, v := range data {
 		do.Set(k, v)
 	}
-	return do
 }
 
 // Init initializes the data object if it is not already initialized

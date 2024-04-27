@@ -18,7 +18,7 @@ It follows the following principles:
 Any object can be considered a data object as long as it adheres to the above principles, 
 regardless of its specific implementation.
 
-The implemetation in this repo is just one way to implement the above principles. Other variations are possible to suit specific needs.
+The implementation in this repo is just one way to implement the above principles. Other variations are possible to suit specific needs.
 
 The concept is a bit similar to a POJO and a Java Bean.
 
@@ -51,8 +51,8 @@ func NewUser() *User {
 	o := &User{}
 	o.SetID(uid.HumanUid())
 	o.SetStatus("active")
-	o.SetCreatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
-	o.SetUpdatedAt(carbon.NewCarbon().Now().Format("Y-m-d H:i:s"))
+	o.SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
+	o.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 	return o
 }
 
@@ -232,13 +232,13 @@ log.Println(jsonString)
 ```
 
 
-## Unserialize from JSON
+## Deserialize from JSON
 
 ```golang
 user, err := NewDataObjectFromJSON(jsonString)
 
 if err != nil {
-    log.Fatal("Error unserializing")
+    log.Fatal("Error deserializing")
 }
 
 user.Get("first_name")
