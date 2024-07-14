@@ -4,10 +4,10 @@ package dataobject
 type DataObjectInterface interface {
 
 	// ID returns the ID of the object
-	ID() string
+	ID() (string, error)
 
 	// SetID sets the ID of the object
-	SetID(id string)
+	SetID(id string) error
 
 	// GetData returns the data for the object
 	Data() map[string]string

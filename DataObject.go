@@ -1,22 +1,46 @@
 package dataobject
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 var _ DataObjectInterface = (*DataObject)(nil) // verify it extends the data object interface
 
 type DataObject struct {
-	data        map[string]string
-	dataChanged map[string]string
+	data         map[string]string
+	dataChanged  map[string]string
+	transformers map[string]TransformerInterface
+}
+
+func (do *DataObject) SetTransformer(key string, transformer TransformerInterface) error {
+	_, exists := do.transformers[key]
+	if exists {
+		return errors.New(`transformer for key "` + key + `" already set`)
+	}
+
+	do.transformers[key] = transformer
+	return nil
+}
+
+func (do *DataObject) GetTransformer(key string) TransformerInterface {
+	transformer, exists := do.transformers[key]
+
+	if exists {
+		return transformer
+	}
+
+	return nil
 }
 
 // ID returns the ID of the object
-func (do *DataObject) ID() string {
+func (do *DataObject) ID() (string, error) {
 	return do.Get("id")
 }
 
 // SetID sets the ID of the object
-func (do *DataObject) SetID(id string) {
-	do.Set("id", id)
+func (do *DataObject) SetID(id string) error {
+	return do.Set("id", id)
 }
 
 // Data returns all the data of the object
@@ -58,19 +82,46 @@ func (do *DataObject) Init() {
 	if len(do.dataChanged) < 1 {
 		do.dataChanged = map[string]string{}
 	}
+	if len(do.transformers) < 1 {
+		do.transformers = map[string]TransformerInterface{}
+	}
 }
 
 // Set helper setter method
-func (do *DataObject) Set(key string, value string) {
+func (do *DataObject) Set(key string, value string) error {
 	do.Init()
+
+	transformer := do.GetTransformer(key)
+	if transformer != nil {
+		valueSerialized, err := transformer.Serialize(value)
+		if err != nil {
+			return err
+		}
+		value = valueSerialized
+	}
+
 	do.data[key] = value
 	do.dataChanged[key] = value
+
+	return nil
 }
 
 // Get helper getter method
-func (do *DataObject) Get(key string) string {
+func (do *DataObject) Get(key string) (string, error) {
 	do.Init()
-	return do.data[key]
+
+	value := do.data[key]
+
+	transformer := do.GetTransformer(key)
+	if transformer != nil {
+		valueDeserialized, err := transformer.Deserialize(value)
+		if err != nil {
+			return "", err
+		}
+		value = valueDeserialized
+	}
+
+	return value, nil
 }
 
 // Hydrate sets the data for the object without marking it as dirty
