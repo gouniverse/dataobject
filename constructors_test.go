@@ -125,7 +125,7 @@ func TestNewDataObjectFromJSONEmptyJSON(t *testing.T) {
 	}
 
 	// Verify the error message is correct
-	expectedError := "invalid json: missing id"
+	expectedError := "invalid json: must be a valid dataobject json object"
 	if err.Error() != expectedError {
 		t.Errorf("Expected error message '%s', but got: '%s'", expectedError, err.Error())
 	}

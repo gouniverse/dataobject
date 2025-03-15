@@ -56,7 +56,7 @@ func NewDataObjectFromExistingData(data map[string]string) *DataObject {
 // - an error if any
 func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
 	if !isDataObjectJSON(jsonString) {
-		return nil, errors.New("invalid json: missing id")
+		return nil, errors.New("invalid json: must be a valid dataobject json object")
 	}
 
 	var e any
@@ -73,6 +73,9 @@ func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
 		return nil, errors.New("invalid data from json")
 	}
 
+	if data[propertyId] == "" {
+		return nil, errors.New("invalid json: missing id")
+	}
 	do = NewDataObjectFromExistingData(data)
 
 	return do, nil
