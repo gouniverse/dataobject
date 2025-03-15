@@ -71,8 +71,8 @@ func NewUser() *User {
 	return o
 }
 
-// NewUserFromExistingData helper method to hydrate an existing user data object
-func NewUserFromExistingData(data map[string]string) *User {
+// NewUserFromData helper method to hydrate an existing user data object
+func NewUserFromData(data map[string]string) *User {
 	o := &User{}
 	o.Hydrate(data)
 	return o
