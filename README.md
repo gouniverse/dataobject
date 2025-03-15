@@ -29,6 +29,7 @@ The package provides the following constructor functions:
 - `New()` - Creates a new data object with a generated ID
 - `NewFromData(data map[string]string)` - Creates a data object from existing data
 - `NewFromJSON(jsonString string)` - Creates a data object from a JSON string
+- `NewFromGob(gobData []byte)` - Creates a data object from a gob-encoded byte array
 
 The following constructor functions are deprecated and will be removed in a future version:
 
@@ -219,6 +220,13 @@ if err != nil {
     // Handle error
 }
 
+// Create a data object from gob-encoded data
+gobData, _ := existingDataObject.ToGob()
+do, err := dataobject.NewFromGob(gobData)
+if err != nil {
+    // Handle error
+}
+
 // Get and set values
 do.Set("name", "New Name")
 name := do.Get("name")
@@ -296,7 +304,6 @@ log.Println(jsonString)
 
 ```
 
-
 ## Deserialize from JSON
 
 ```golang
@@ -308,6 +315,30 @@ if err != nil {
 
 user.Get("first_name")
 
+```
+
+## Serialize to Gob
+
+```golang
+gobData, err := user.ToGob()
+
+if err != nil {
+    log.Fatal("Error serializing to gob")
+}
+
+// Use gobData for efficient Go-to-Go data transfer or storage
+```
+
+## Deserialize from Gob
+
+```golang
+user, err := NewFromGob(gobData)
+
+if err != nil {
+    log.Fatal("Error deserializing from gob")
+}
+
+user.Get("first_name")
 ```
 
 ## Installation

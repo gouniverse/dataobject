@@ -1,13 +1,15 @@
 package dataobject
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"errors"
 
 	"github.com/gouniverse/uid"
 )
 
-// NewDataObject creates a new data object with a unique ID
+// New creates a new data object with a unique ID
 //
 // Business logic:
 // - instantiates a new data object
@@ -17,30 +19,13 @@ import (
 //
 // Returns:
 // - a new data object
-func NewDataObject() *DataObject {
+func New() *DataObject {
 	o := &DataObject{}
 	o.SetID(uid.HumanUid())
 	return o
 }
 
-// NewDataObjectFromExistingData creates a new data object
-// and hydrates it with the passed data
-//
-// Note: the object is marked as not dirty, as it is existing data
-//
-// Business logic:
-// - instantiates a new data object
-// - hydrates it with the passed data
-//
-// Returns:
-// - a new data object
-func NewDataObjectFromExistingData(data map[string]string) *DataObject {
-	o := &DataObject{}
-	o.Hydrate(data)
-	return o
-}
-
-// NewDataObjectFromJSON creates a new data object
+// NewFromJSON creates a new data object
 // and hydrates it with the passed JSON string.
 //
 // # The JSON string is expected to be a valid DataObject JSON object
@@ -54,7 +39,7 @@ func NewDataObjectFromExistingData(data map[string]string) *DataObject {
 // Returns:
 // - a new data object
 // - an error if any
-func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
+func NewFromJSON(jsonString string) (*DataObject, error) {
 	if !isDataObjectJSON(jsonString) {
 		return nil, errors.New("invalid json: must be a valid dataobject json object")
 	}
@@ -76,7 +61,76 @@ func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
 	if data[propertyId] == "" {
 		return nil, errors.New("invalid json: missing id")
 	}
-	do = NewDataObjectFromExistingData(data)
+	
+	do := NewFromData(data)
 
 	return do, nil
+}
+
+// NewFromData creates a new data object
+// and hydrates it with the passed data
+//
+// Note: the object is marked as not dirty, as it is existing data
+//
+// Business logic:
+// - instantiates a new data object
+// - hydrates it with the passed data
+//
+// Returns:
+// - a new data object
+func NewFromData(data map[string]string) *DataObject {
+	o := &DataObject{}
+	o.Hydrate(data)
+	return o
+}
+
+// NewFromGob creates a new data object
+// and hydrates it with the passed gob-encoded byte array.
+//
+// # The gob data is expected to be an encoded map[string]string
+//
+// Note: the object is marked as not dirty, as it is existing data
+//
+// Business logic:
+// - instantiates a new data object
+// - decodes the gob data
+// - hydrates it with the decoded data
+//
+// Returns:
+// - a new data object
+// - an error if any
+func NewFromGob(gobData []byte) (*DataObject, error) {
+	var data map[string]string
+	
+	decoder := gob.NewDecoder(bytes.NewReader(gobData))
+	err := decoder.Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	
+	if data[propertyId] == "" {
+		return nil, errors.New("invalid gob data: missing id")
+	}
+	
+	do := NewFromData(data)
+	
+	return do, nil
+}
+
+// Deprecated: NewDataObject is deprecated, use New() instead.
+// Creates a new data object with a unique ID
+func NewDataObject() *DataObject {
+	return New()
+}
+
+// Deprecated: NewDataObjectFromExistingData is deprecated, use NewFromData() instead.
+// Creates a new data object and hydrates it with the passed data
+func NewDataObjectFromExistingData(data map[string]string) *DataObject {
+	return NewFromData(data)
+}
+
+// Deprecated: NewDataObjectFromJSON is deprecated, use NewFromJSON() instead.
+// Creates a new data object and hydrates it with the passed JSON string
+func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
+	return NewFromJSON(jsonString)
 }

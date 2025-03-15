@@ -1,6 +1,8 @@
 package dataobject
 
 import (
+	"bytes"
+	"encoding/gob"
 	"strings"
 	"testing"
 )
@@ -36,6 +38,96 @@ func TestDataObjectToJSON(t *testing.T) {
 
 	if !strings.Contains(json, `"last_name":"Doe"`) {
 		t.Error(`Expected to contain: "last_name":"Doe", but found:`, json)
+	}
+}
+
+func TestDataObjectToGob(t *testing.T) {
+	// Create a data object with some test data
+	user := NewDataObject()
+	user.Set("first_name", "Jon")
+	user.Set("last_name", "Doe")
+
+	// Convert to gob
+	gobData, err := user.ToGob()
+
+	// Verify no error is returned
+	if err != nil {
+		t.Error("Error must be nil, but found:", err.Error())
+		return
+	}
+
+	// Verify gob data is not empty
+	if len(gobData) == 0 {
+		t.Error("Expected gob data to not be empty")
+		return
+	}
+
+	// Decode the gob data to verify it contains the correct data
+	var decodedData map[string]string
+	decoder := gob.NewDecoder(bytes.NewReader(gobData))
+	err = decoder.Decode(&decodedData)
+	
+	if err != nil {
+		t.Error("Failed to decode gob data:", err.Error())
+		return
+	}
+
+	// Verify the decoded data contains the expected values
+	if decodedData["first_name"] != "Jon" {
+		t.Errorf("Expected decodedData[\"first_name\"] to be \"Jon\", but found %s", decodedData["first_name"])
+	}
+
+	if decodedData["last_name"] != "Doe" {
+		t.Errorf("Expected decodedData[\"last_name\"] to be \"Doe\", but found %s", decodedData["last_name"])
+	}
+
+	// Verify the ID was preserved
+	if decodedData["id"] == "" {
+		t.Error("Expected ID to be preserved in gob data, but it was empty")
+	}
+}
+
+func TestDataObjectToGobAndBack(t *testing.T) {
+	// Create a data object with some test data
+	original := NewDataObject()
+	original.Set("first_name", "Jane")
+	original.Set("last_name", "Smith")
+	original.Set("age", "30")
+
+	// Convert to gob
+	gobData, err := original.ToGob()
+	if err != nil {
+		t.Error("Failed to convert to gob:", err.Error())
+		return
+	}
+
+	// Create a new data object from the gob data
+	restored, err := NewFromGob(gobData)
+	if err != nil {
+		t.Error("Failed to create from gob:", err.Error())
+		return
+	}
+
+	// Verify all data was preserved correctly
+	if restored.ID() != original.ID() {
+		t.Errorf("Expected ID to be preserved, original: %s, restored: %s", original.ID(), restored.ID())
+	}
+
+	if restored.Get("first_name") != "Jane" {
+		t.Errorf("Expected first_name to be \"Jane\", but found %s", restored.Get("first_name"))
+	}
+
+	if restored.Get("last_name") != "Smith" {
+		t.Errorf("Expected last_name to be \"Smith\", but found %s", restored.Get("last_name"))
+	}
+
+	if restored.Get("age") != "30" {
+		t.Errorf("Expected age to be \"30\", but found %s", restored.Get("age"))
+	}
+
+	// Verify the restored object is not marked as dirty (as it's from existing data)
+	if restored.IsDirty() {
+		t.Error("Expected restored object to not be dirty, but it was")
 	}
 }
 

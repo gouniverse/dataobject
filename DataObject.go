@@ -1,6 +1,10 @@
 package dataobject
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+)
 
 const propertyId = "id"
 
@@ -93,4 +97,21 @@ func (do *DataObject) ToJSON() (string, error) {
 	}
 
 	return string(jsonValue), nil
+}
+
+// ToGob converts the DataObject to a gob-encoded byte array
+//
+// Returns:
+// - the gob-encoded byte array representation of the DataObject
+// - an error if any
+func (do *DataObject) ToGob() ([]byte, error) {
+	var buf bytes.Buffer
+	encoder := gob.NewEncoder(&buf)
+	
+	err := encoder.Encode(do.data)
+	if err != nil {
+		return nil, err
+	}
+	
+	return buf.Bytes(), nil
 }

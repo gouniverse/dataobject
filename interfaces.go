@@ -17,4 +17,10 @@ type DataObjectInterface interface {
 
 	// Hydrates the data object with data
 	Hydrate(map[string]string)
+	
+	// ToJSON converts the DataObject to a JSON string
+	ToJSON() (string, error)
+	
+	// ToGob converts the DataObject to a gob-encoded byte array
+	ToGob() ([]byte, error)
 }
