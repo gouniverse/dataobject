@@ -13,16 +13,19 @@ func TestNewDataObjectFromJSON(t *testing.T) {
 
 	if errJson != nil {
 		t.Error("Error must be nil, but found:", errJson.Error())
+		return
 	}
 
 	do, err := NewDataObjectFromJSON(json)
 
 	if err != nil {
 		t.Error("Error must be nil, but found:", err.Error())
+		return
 	}
 
 	if do == nil {
 		t.Error("DataObject must NOT be nil, but found:", nil)
+		return
 	}
 
 	if do.Get("last_name") != "Doe" {

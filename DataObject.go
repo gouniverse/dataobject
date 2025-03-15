@@ -52,10 +52,10 @@ func (do *DataObject) SetData(data map[string]string) {
 
 // Init initializes the data object if it is not already initialized
 func (do *DataObject) Init() {
-	if len(do.data) < 1 {
+	if do.data == nil {
 		do.data = map[string]string{}
 	}
-	if len(do.dataChanged) < 1 {
+	if do.dataChanged == nil {
 		do.dataChanged = map[string]string{}
 	}
 }

@@ -16,18 +16,19 @@ func NewDataObject() *DataObject {
 // NewDataObjectFromExistingData creates a new data object
 // and hydrates it with the passed data
 func NewDataObjectFromExistingData(data map[string]string) *DataObject {
-	o := &DataObject{}
+	o := NewDataObject()
 	o.Hydrate(data)
 	return o
 }
 
 func NewDataObjectFromJSON(jsonString string) (do *DataObject, err error) {
-	var e interface{}
+
+	var e any
 
 	jsonError := json.Unmarshal([]byte(jsonString), &e)
 
 	if jsonError != nil {
-		return do, jsonError
+		return nil, jsonError
 	}
 
 	data := mapStringAnyToMapStringString(e.(map[string]any))
