@@ -3,8 +3,36 @@ package dataobject
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"unsafe"
 )
+
+// isDataObjectJSON checks if the passed JSON string is a valid DataObject JSON object
+//
+// Business logic:
+// - checks if the JSON string is empty or "{}", or "null", returns false
+// - checks if the JSON string is invalid JSON string (does not start with '{' or end with '}', returns false
+// - checks if the JSON string contains the required id property, returns false
+// - returns true
+//
+// Returns:
+// - true if the JSON string is a valid DataObject JSON string
+// - false otherwise
+func isDataObjectJSON(jsonString string) bool {
+	if jsonString == "" || jsonString == "{}" || jsonString == "null" {
+		return false
+	}
+
+	if !strings.HasPrefix(jsonString, "{") || !strings.HasSuffix(jsonString, "}") {
+		return false
+	}
+
+	if strings.Contains(jsonString, `"`+propertyId+`"`) {
+		return true
+	}
+
+	return false
+}
 
 // mapStringAnyToMapStringString converts a map[string]any to map[string]string
 func mapStringAnyToMapStringString(data map[string]any) map[string]string {
@@ -16,7 +44,7 @@ func mapStringAnyToMapStringString(data map[string]any) map[string]string {
 }
 
 // toString converts an interface to string
-func toString(v interface{}) string {
+func toString(v any) string {
 	switch v := v.(type) {
 	case string:
 		return v

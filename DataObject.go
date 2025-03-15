@@ -2,6 +2,8 @@ package dataobject
 
 import "encoding/json"
 
+const propertyId = "id"
+
 var _ DataObjectInterface = (*DataObject)(nil) // verify it extends the data object interface
 
 type DataObject struct {
@@ -11,12 +13,12 @@ type DataObject struct {
 
 // ID returns the ID of the object
 func (do *DataObject) ID() string {
-	return do.Get("id")
+	return do.Get(propertyId)
 }
 
 // SetID sets the ID of the object
 func (do *DataObject) SetID(id string) {
-	do.Set("id", id)
+	do.Set(propertyId, id)
 }
 
 // Data returns all the data of the object
