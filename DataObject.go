@@ -31,6 +31,14 @@ func (do *DataObject) Data() map[string]string {
 	return do.data
 }
 
+// SetData sets the data for the object and marks it as dirty
+// see Hydrate for assignment without marking as dirty
+func (do *DataObject) SetData(data map[string]string) {
+	for k, v := range data {
+		do.Set(k, v)
+	}
+}
+
 // DataChanged returns only the modified data
 func (do *DataObject) DataChanged() map[string]string {
 	do.Init()
@@ -46,14 +54,6 @@ func (do *DataObject) MarkAsNotDirty() {
 func (do *DataObject) IsDirty() bool {
 	do.Init()
 	return len(do.dataChanged) > 0
-}
-
-// SetData sets the data for the object and marks it as dirty
-// see Hydrate for assignment without marking as dirty
-func (do *DataObject) SetData(data map[string]string) {
-	for k, v := range data {
-		do.Set(k, v)
-	}
 }
 
 // Init initializes the data object if it is not already initialized
@@ -107,11 +107,11 @@ func (do *DataObject) ToJSON() (string, error) {
 func (do *DataObject) ToGob() ([]byte, error) {
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)
-	
+
 	err := encoder.Encode(do.data)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return buf.Bytes(), nil
 }

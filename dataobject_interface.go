@@ -12,15 +12,30 @@ type DataObjectInterface interface {
 	// GetData returns the data for the object
 	Data() map[string]string
 
+	// SetData sets the data for the object
+	SetData(data map[string]string)
+
 	// GetChangedData returns the data that has been changed since the last hydration
 	DataChanged() map[string]string
 
+	// MarkAsNotDirty marks the object as not dirty
+	MarkAsNotDirty()
+
+	// IsDirty returns if data has been modified
+	IsDirty() bool
+
 	// Hydrates the data object with data
 	Hydrate(map[string]string)
-	
+
+	// Get returns the value for a key
+	Get(key string) string
+
+	// Set sets a key-value pair in the data object
+	Set(key string, value string)
+
 	// ToJSON converts the DataObject to a JSON string
 	ToJSON() (string, error)
-	
+
 	// ToGob converts the DataObject to a gob-encoded byte array
 	ToGob() ([]byte, error)
 }
