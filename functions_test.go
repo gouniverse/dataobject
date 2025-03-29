@@ -232,10 +232,21 @@ func TestIsDataObjectJSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := isDataObjectJSON(tc.input)
+			result := isValidDataObjectJSON(tc.input)
 			if result != tc.expected {
 				t.Errorf("Expected isDataObjectJSON(%s) to be %v, but got %v", tc.input, tc.expected, result)
 			}
 		})
+	}
+}
+
+func Test_generateID(t *testing.T) {
+	for range 10000 {
+		uid1 := generateID()
+		uid2 := generateID()
+
+		if uid1 == uid2 {
+			t.Error("generateID() generated the same ID twice")
+		}
 	}
 }

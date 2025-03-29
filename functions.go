@@ -5,7 +5,14 @@ import (
 	"strconv"
 	"strings"
 	"unsafe"
+
+	"github.com/gouniverse/uid"
 )
+
+// generateID generates a new ID for a data object
+func generateID() string {
+	return uid.HumanUid()
+}
 
 // isDataObjectJSON checks if the passed JSON string is a valid DataObject JSON object
 //
@@ -18,7 +25,7 @@ import (
 // Returns:
 // - true if the JSON string is a valid DataObject JSON string
 // - false otherwise
-func isDataObjectJSON(jsonString string) bool {
+func isValidDataObjectJSON(jsonString string) bool {
 	if jsonString == "" || jsonString == "{}" || jsonString == "null" {
 		return false
 	}

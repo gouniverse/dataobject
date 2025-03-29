@@ -5,8 +5,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
-
-	"github.com/gouniverse/uid"
 )
 
 // New creates a new data object with a unique ID
@@ -21,7 +19,7 @@ import (
 // - a new data object
 func New() *DataObject {
 	o := &DataObject{}
-	o.SetID(uid.HumanUid())
+	o.SetID(generateID())
 	return o
 }
 
@@ -40,7 +38,7 @@ func New() *DataObject {
 // - a new data object
 // - an error if any
 func NewFromJSON(jsonString string) (*DataObject, error) {
-	if !isDataObjectJSON(jsonString) {
+	if !isValidDataObjectJSON(jsonString) {
 		return nil, errors.New("invalid json: must be a valid dataobject json object")
 	}
 
@@ -61,7 +59,7 @@ func NewFromJSON(jsonString string) (*DataObject, error) {
 	if data[propertyId] == "" {
 		return nil, errors.New("invalid json: missing id")
 	}
-	
+
 	do := NewFromData(data)
 
 	return do, nil
@@ -70,17 +68,28 @@ func NewFromJSON(jsonString string) (*DataObject, error) {
 // NewFromData creates a new data object
 // and hydrates it with the passed data
 //
-// Note: the object is marked as not dirty, as it is existing data
+// Note: the object is marked as not dirty, as it is existing data,
+// unless ID is missing, in which case it is added (and the object is marked as dirty)
 //
 // Business logic:
 // - instantiates a new data object
 // - hydrates it with the passed data
+// - generates an ID, using uid.HumanUid() if missing (but is marked as dirty)
 //
 // Returns:
 // - a new data object
 func NewFromData(data map[string]string) *DataObject {
+	if data == nil {
+		return nil
+	}
+
 	o := &DataObject{}
 	o.Hydrate(data)
+
+	if o.ID() == "" {
+		o.SetID(generateID())
+	}
+
 	return o
 }
 
@@ -101,19 +110,19 @@ func NewFromData(data map[string]string) *DataObject {
 // - an error if any
 func NewFromGob(gobData []byte) (*DataObject, error) {
 	var data map[string]string
-	
+
 	decoder := gob.NewDecoder(bytes.NewReader(gobData))
 	err := decoder.Decode(&data)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if data[propertyId] == "" {
 		return nil, errors.New("invalid gob data: missing id")
 	}
-	
+
 	do := NewFromData(data)
-	
+
 	return do, nil
 }
 
